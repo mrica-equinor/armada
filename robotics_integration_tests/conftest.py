@@ -26,14 +26,21 @@ from robotics_integration_tests.custom_containers.isar import (
 )
 from robotics_integration_tests.custom_containers.migrations_runner import (
     create_migrations_runner_container,
+    create_sara_migrations_runner_container,
 )
 from robotics_integration_tests.custom_containers.mosquitto import (
     create_flotilla_broker_container,
     FlotillaBroker,
 )
 from robotics_integration_tests.custom_containers.postgres import (
+    SaraDatabase,
     create_postgres_container,
     FlotillaDatabase,
+    create_sara_postgres_container,
+)
+from robotics_integration_tests.custom_containers.sara import (
+    Sara,
+    create_sara_container,
 )
 from robotics_integration_tests.custom_containers.stream_logging_docker_container import (
     StreamLoggingDockerContainer,
@@ -44,6 +51,7 @@ from robotics_integration_tests.utilities.flotilla_backend_api import (
     wait_for_backend_to_be_responsive,
     populate_database_with_minimum_models,
     wait_for_database_to_be_populated,
+    wait_for_sara_to_be_responsive,
 )
 from robotics_integration_tests.utilities.keyvault import Keyvault
 
@@ -101,6 +109,44 @@ def flotilla_database(network: Network, keyvault: Keyvault):
             database=database,
             connection_string=connection_string,
             alias=settings.DB_ALIAS,
+        )
+
+
+@pytest.fixture
+def sara_database(network: Network, keyvault: Keyvault):
+    with create_sara_postgres_container(network) as database:
+        wait_for_port_mapping_to_be_available(container=database, port=5432)
+        logger.info(
+            f"Postgres URL: {database.get_connection_url()}, "
+            f"Port: {database.get_exposed_port(5432)}"
+        )
+
+        connection_string: str = (
+            f"Host={settings.SARA_DB_ALIAS}; Port={5432}; Username={settings.SARA_DB_USER}; Password={settings.SARA_DB_PASSWORD}; "
+            f"Database={settings.SARA_DB_ALIAS}; SSL Mode=Disable;"
+        )
+
+        with create_sara_migrations_runner_container(
+            network=network,
+            postgres_connection_string=connection_string,
+        ) as migrations_runner:
+            # Block until the container exits; returns {"StatusCode": int}
+            result = migrations_runner.get_wrapped_container().wait()
+            status = int(result.get("StatusCode", 1))
+            if status != 0:
+                raise RuntimeError(f"Sara migrator failed with exit code {status}")
+
+        logger.info("Sara migrations completed successfully (container exited cleanly)")
+
+        keyvault.set_secret(
+            secret_name="sara-database-connection-string",
+            secret_value=connection_string,
+        )
+
+        yield SaraDatabase(
+            database=database,
+            connection_string=connection_string,
+            alias=settings.SARA_DB_ALIAS,
         )
 
 
@@ -200,6 +246,32 @@ def flotilla_backend(network: Network, flotilla_database: FlotillaDatabase):
 
 
 @pytest.fixture
+def sara(network: Network, sara_database: SaraDatabase):
+    with create_sara_container(
+        network=network,
+        database_connection_string=sara_database.connection_string,
+        image=settings.SARA_IMAGE,
+        name=settings.SARA_NAME,
+        port=settings.SARA_PORT,
+        alias=settings.SARA_ALIAS,
+    ) as sara_container:
+        wait_for_port_mapping_to_be_available(
+            container=sara_container, port=settings.SARA_PORT
+        )
+
+        sara_url: str = f"http://localhost:{sara_container.get_exposed_port(8100)}"
+        wait_for_sara_to_be_responsive(sara_url=sara_url)
+
+        yield Sara(
+            sara=sara_container,
+            backend_url=sara_url,
+            name=settings.SARA_NAME,
+            port=settings.SARA_PORT,
+            alias=settings.SARA_ALIAS,
+        )
+
+
+@pytest.fixture
 def armada_without_robots(
     keyvault: Keyvault,
     network: Network,
@@ -207,6 +279,7 @@ def armada_without_robots(
     flotilla_storage: FlotillaStorage,
     flotilla_broker: FlotillaBroker,
     flotilla_backend: FlotillaBackend,
+    sara: Sara,
 ):
     armada: Armada = Armada()
 
@@ -216,6 +289,7 @@ def armada_without_robots(
     armada.flotilla_storage = flotilla_storage
     armada.flotilla_broker = flotilla_broker
     armada.flotilla_backend = flotilla_backend
+    armada.sara = sara
 
     yield armada
 

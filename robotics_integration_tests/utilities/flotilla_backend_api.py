@@ -214,6 +214,28 @@ def wait_for_backend_to_be_responsive(backend_url: str, timeout: int = 60) -> No
             return
 
 
+def wait_for_sara_to_be_responsive(sara_url: str, timeout: int = 60) -> None:
+    start_time: datetime = datetime.now()
+    while True:
+        if datetime.now() - start_time > timedelta(seconds=timeout):
+            raise RuntimeError(
+                f"Sara was not responsive within the given timeout {timeout} seconds"
+            )
+
+        try:
+            analysis_mapping: List[Dict] = _list_database_entries(
+                backend_url=sara_url, request_path="AnalysisMapping"
+            )
+        except Exception:
+            logger.warning("Backend is not responsive yet, will retry until timeout...")
+            time.sleep(1)
+            continue
+
+        if len(analysis_mapping) >= 0:
+            logger.info("Sara is responsive")
+            return
+
+
 # Populate default installations
 default_installations: List[Tuple[str, str]] = [
     ("HUA", "Huldra"),

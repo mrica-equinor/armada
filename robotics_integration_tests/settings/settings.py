@@ -48,19 +48,35 @@ class Settings(BaseSettings):
     FLOTILLA_BROKER_IMAGE: str = Field(default="ghcr.io/equinor/flotilla-broker:latest")
     FLOTILLA_BROKER_PORT: int = Field(default=1883)
 
-    # PostgreSQL Database environment
+    # PostgreSQL Flotilla Database environment
     POSTGRESQL_IMAGE: str = Field(default="postgres:16")
     DB_USER: str = Field(default="flotilla")
     DB_PASSWORD: str = Field(default="default_password")
-    DB_ALIAS: str = Field(default="postgres_database")
+    DB_ALIAS: str = Field(default="flotilla_postgres_database")
 
     GIT_REPOSITORY_FOR_MIGRATIONS: str = Field(default="equinor/flotilla")
     GIT_REPOSITORY_FOR_MIGRATIONS_REF: str = Field(default="latest")
     BACKEND_PROJECT_FILE_FOLDER: str = Field(default="backend/api")
 
+    # PostgreSQL Sara Database environment
+    POSTGRESQL_IMAGE: str = Field(default="postgres:16")
+    SARA_DB_USER: str = Field(default="sara")
+    SARA_DB_PASSWORD: str = Field(default="default_password")
+    SARA_DB_ALIAS: str = Field(default="sara_postgres_database")
+
+    SARA_GIT_REPOSITORY_FOR_MIGRATIONS: str = Field(default="equinor/sara")
+    SARA_GIT_REPOSITORY_FOR_MIGRATIONS_REF: str = Field(default="latest")
+
+    SARA_BACKEND_PROJECT_FILE_FOLDER: str = Field(default="api")
+
     # Migrations runner environment
     RELATIVE_PATH_TO_DOCKERFILE: str = Field(
         default="./robotics_integration_tests/custom_images/migrations_runner/"
+    )
+
+    # Sara migrations runner environment
+    SARA_RELATIVE_PATH_TO_DOCKERFILE: str = Field(
+        default="./robotics_integration_tests/custom_images/sara_migrations_runner/"
     )
 
     # ISAR Robot environment
@@ -81,6 +97,20 @@ class Settings(BaseSettings):
     SARA_RAW_STORAGE_CONTAINER: str = Field(default="sara-raw")
     SARA_ANON_STORAGE_CONTAINER: str = Field(default="sara-anon")
     SARA_VIS_STORAGE_CONTAINER: str = Field(default="sara-vis")
+    SARA_AZURE_CLIENT_SECRET: Optional[str] = Field(default="")
+    SARA_MQTT_PASSWORD: Optional[str] = Field(default="")
+    SARA_AZURE_CLIENT_ID: Optional[str] = Field(
+        default="dd7e115a-037e-4846-99c4-07561158a9cd"
+    )
+    SARA_AZURE_TENANT_ID: Optional[str] = Field(
+        default="3aa4a235-b6e2-48d5-9195-7fcf05b459b0"
+    )
+    SARA_BROKER_ALIAS: str = Field(default="sara")
+    SARA_BROKER_PORT: int = Field(default=1883)
+    SARA_IMAGE: str = Field(default="ghcr.io/equinor/sara:latest")
+    SARA_NAME: str = Field(default="sara")
+    SARA_PORT: int = Field(default=8100)
+    SARA_ALIAS: str = Field(default="sara")
 
     # Azurite environment and configurations
     AZURITE_IMAGE: str = Field(default="mcr.microsoft.com/azure-storage/azurite:latest")
