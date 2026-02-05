@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     DB_ALIAS: str = Field(default="flotilla_postgres_database")
 
     GIT_REPOSITORY_FOR_MIGRATIONS: str = Field(default="equinor/flotilla")
-    GIT_REPOSITORY_FOR_MIGRATIONS_REF: str = Field(default="latest")
+    GIT_REPOSITORY_FOR_MIGRATIONS_REF: str = Field(default="v0.14.9")
     BACKEND_PROJECT_FILE_FOLDER: str = Field(default="backend/api")
 
     # PostgreSQL Sara Database environment
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     SARA_DB_ALIAS: str = Field(default="sara_postgres_database")
 
     SARA_GIT_REPOSITORY_FOR_MIGRATIONS: str = Field(default="equinor/sara")
-    SARA_GIT_REPOSITORY_FOR_MIGRATIONS_REF: str = Field(default="latest")
+    SARA_GIT_REPOSITORY_FOR_MIGRATIONS_REF: str = Field(default="v0.3.7")
 
     SARA_BACKEND_PROJECT_FILE_FOLDER: str = Field(default="api")
 
@@ -97,20 +97,15 @@ class Settings(BaseSettings):
     SARA_RAW_STORAGE_CONTAINER: str = Field(default="sara-raw")
     SARA_ANON_STORAGE_CONTAINER: str = Field(default="sara-anon")
     SARA_VIS_STORAGE_CONTAINER: str = Field(default="sara-vis")
-    SARA_AZURE_CLIENT_SECRET: Optional[str] = Field(default="")
-    SARA_MQTT_PASSWORD: Optional[str] = Field(default="")
-    SARA_AZURE_CLIENT_ID: Optional[str] = Field(
-        default="dd7e115a-037e-4846-99c4-07561158a9cd"
-    )
-    SARA_AZURE_TENANT_ID: Optional[str] = Field(
-        default="3aa4a235-b6e2-48d5-9195-7fcf05b459b0"
-    )
-    SARA_BROKER_ALIAS: str = Field(default="sara")
-    SARA_BROKER_PORT: int = Field(default=1883)
+    SARA_AZURE_CLIENT_SECRET: str = Field(default="")
+
+    SARA_AZURE_CLIENT_ID: str = Field(default="dd7e115a-037e-4846-99c4-07561158a9cd")
+    SARA_AZURE_TENANT_ID: str = Field(default="3aa4a235-b6e2-48d5-9195-7fcf05b459b0")
     SARA_IMAGE: str = Field(default="ghcr.io/equinor/sara:latest")
     SARA_NAME: str = Field(default="sara")
     SARA_PORT: int = Field(default=8100)
     SARA_ALIAS: str = Field(default="sara")
+    SARA_MQTT_PASSWORD: str = Field(default="")
 
     # Azurite environment and configurations
     AZURITE_IMAGE: str = Field(default="mcr.microsoft.com/azure-storage/azurite:latest")

@@ -46,6 +46,7 @@ def create_flotilla_backend_container(
         .with_env("KeyVault__VaultUri", settings.KEYVAULT_URI)
         .with_env("Database__PostgreSqlConnectionString", database_connection_string)
         .with_env("AzureAd__ClientSecret", settings.FLOTILLA_AZURE_CLIENT_SECRET)
+        .with_env("AzureAd__Audience", f"api://{settings.SARA_AZURE_CLIENT_ID}")
     )
 
     return container

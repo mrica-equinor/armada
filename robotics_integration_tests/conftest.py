@@ -51,9 +51,11 @@ from robotics_integration_tests.utilities.flotilla_backend_api import (
     wait_for_backend_to_be_responsive,
     populate_database_with_minimum_models,
     wait_for_database_to_be_populated,
-    wait_for_sara_to_be_responsive,
 )
 from robotics_integration_tests.utilities.keyvault import Keyvault
+from robotics_integration_tests.utilities.sara_backend_api import (
+    wait_for_sara_to_be_responsive,
+)
 
 
 @pytest.fixture
@@ -275,21 +277,23 @@ def sara(network: Network, sara_database: SaraDatabase):
 def armada_without_robots(
     keyvault: Keyvault,
     network: Network,
-    flotilla_database: FlotillaDatabase,
-    flotilla_storage: FlotillaStorage,
     flotilla_broker: FlotillaBroker,
-    flotilla_backend: FlotillaBackend,
+    sara_database: SaraDatabase,
     sara: Sara,
+    flotilla_database: FlotillaDatabase,
+    flotilla_backend: FlotillaBackend,
+    flotilla_storage: FlotillaStorage,
 ):
     armada: Armada = Armada()
 
     armada.keyvault = keyvault
     armada.network = network
+    armada.sara_database = sara_database
+    armada.sara = sara
     armada.flotilla_database = flotilla_database
     armada.flotilla_storage = flotilla_storage
     armada.flotilla_broker = flotilla_broker
     armada.flotilla_backend = flotilla_backend
-    armada.sara = sara
 
     yield armada
 

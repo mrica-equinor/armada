@@ -12,7 +12,7 @@ WORKDIR /work
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENV GIT_REF=latest \
+ENV GIT_REF=v0.14.9 \
     WAIT_FOR_DB_TIMEOUT=60
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

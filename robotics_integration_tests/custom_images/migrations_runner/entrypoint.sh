@@ -6,7 +6,7 @@ set -euo pipefail
 
 # Optional inputs
 GIT_REPO="${GIT_REPO:-equinor/flotilla}"
-GIT_REF="${GIT_REF:-latest}"
+GIT_REF="${GIT_REF:-v0.14.9}"
 EF_PROJECT_PATH="${EF_PROJECT_PATH:-backend/api}"
 EF_STARTUP_PATH="${EF_STARTUP_PATH:-$EF_PROJECT_PATH}"
 EF_CONTEXT="${EF_CONTEXT:-}"

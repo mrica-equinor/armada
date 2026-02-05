@@ -36,9 +36,10 @@ def create_sara_container(
         .with_exposed_ports(port)
         .with_network(network)
         .with_network_aliases(alias)
-        .with_env("Mqtt__Host", settings.SARA_BROKER_ALIAS)
-        .with_env("Mqtt__Port", settings.SARA_BROKER_PORT)
+        .with_env("Mqtt__Host", settings.FLOTILLA_BROKER_ALIAS)
+        .with_env("Mqtt__Port", settings.FLOTILLA_BROKER_PORT)
         .with_env("Mqtt__Password", settings.SARA_MQTT_PASSWORD)
+        .with_env("Mqtt__Username", "sara")
         .with_env("ASPNETCORE_ENVIRONMENT", settings.ASPNETCORE_ENVIRONMENT)
         .with_env("AZURE_CLIENT_SECRET", settings.SARA_AZURE_CLIENT_SECRET)
         .with_env("AZURE_CLIENT_ID", settings.SARA_AZURE_CLIENT_ID)
@@ -46,6 +47,8 @@ def create_sara_container(
         .with_env("KeyVault__VaultUri", settings.KEYVAULT_URI)
         .with_env("Database__PostgreSqlConnectionString", database_connection_string)
         .with_env("AzureAd__ClientSecret", settings.SARA_AZURE_CLIENT_SECRET)
+        .with_env("AzureAd__ClientId", settings.SARA_AZURE_CLIENT_ID)
+        .with_env("AzureAd__TenantId", settings.SARA_AZURE_TENANT_ID)
     )
 
     return container
